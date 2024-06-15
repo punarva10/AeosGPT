@@ -3,4 +3,4 @@ yarn install
 yarn dev
 ```
 
-deployment link: aeos-gpt.vercel.app
+Link to website: https://aeos-gpt.vercel.app
