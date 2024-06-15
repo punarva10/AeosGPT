@@ -3,15 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
-    // Test database connection
-    const connectionTest = await sql`SELECT 1;`;
-    console.log("Database connection test result:", connectionTest);
-
-    // Attempt to drop the table
-    const result = await sql`DROP TABLE final_test_table`;
-    return NextResponse.json({ result }, { status: 200 });
+    await sql`DROP TABLE last_table`;
   } catch (error) {
-    console.error("Error dropping table:", error);
-    return NextResponse.json({ error: error }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
+
+  const pets = await sql`SELECT * FROM final_test_table;`;
+  return NextResponse.json({ pets }, { status: 200 });
 }
