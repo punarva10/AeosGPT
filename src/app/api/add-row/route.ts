@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 
   try {
     if (!petName || !ownerName) throw new Error("Pet and owner names required");
-    await sql`INSERT INTO Pee (Name, Owner) VALUES (${petName}, ${ownerName});`;
+    await sql`INSERT INTO New_table (Name, Owner) VALUES (${petName}, ${ownerName});`;
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
