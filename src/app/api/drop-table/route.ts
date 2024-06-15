@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     console.log("Database connection test result:", connectionTest);
 
     // Attempt to drop the table
-    const result = await sql`DROP TABLE New_table`;
+    const result = await sql`DROP TABLE final_test_table`;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
     console.error("Error dropping table:", error);
