@@ -19,6 +19,7 @@ const CreateTeamPage = () => {
   } = useForm<FieldValues>({
     defaultValues: {
       teamName: "",
+      sessionName: ""
     },
   });
 
@@ -28,7 +29,8 @@ const CreateTeamPage = () => {
     axios
       .post("/api/create-team", data)
       .then((res) => {
-        router.push("/chat");
+        const {chatSession} = res.data
+        router.push(`/session/${chatSession.id}`);
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -49,6 +51,14 @@ const CreateTeamPage = () => {
             required
             id="teamName"
             label="Team Name"
+          />
+          <Input
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            required
+            id="sessionName"
+            label="Session Name"
           />
           <div>
             <Button disabled={isLoading} fullWidth type="submit">

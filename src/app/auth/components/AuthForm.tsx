@@ -19,7 +19,7 @@ const AuthForm = () => {
 
   useEffect(() => {
     if (session?.status === "authenticated") {
-      router.push("/chat");
+      router.push("/create-team");
     }
   }, [session?.status, router]);
 

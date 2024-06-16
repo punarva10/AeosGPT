@@ -4,8 +4,8 @@ import ToasterContext from "./context/ToasterContext";
 import Navbar from "@/components/Navbar";
 
 export const metadata = {
-  title: "FanVerse",
-  description: "FanVerse App",
+  title: "AeosGPT",
+  description: "AeosGPT Chat App",
 };
 
 export default function RootLayout({
