@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { teamName } = body;
+  const { teamName, sessionName } = body;
 
   if (!teamName || typeof teamName !== "string") {
     return NextResponse.json({ message: "Invalid team name" }, { status: 400 });
@@ -44,7 +44,17 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ team }, { status: 201 });
+    const chatSession = await db.sessions.create({
+      data: {
+        team_id: team.id,
+        title: sessionName,
+      },
+    });
+
+    return NextResponse.json(
+      { team: team, chatSession: chatSession },
+      { status: 201 }
+    );
   } catch (error) {
     console.error(error);
 
