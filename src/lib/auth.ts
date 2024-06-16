@@ -2,6 +2,7 @@ import { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import db from "./db";
+import toast from "react-hot-toast";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -31,6 +32,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (!existingUser.verified) {
+          throw new Error("User is not verified");
+        }
+
         const passwordMatch = credentials.password === existingUser.password;
         if (!passwordMatch) {
           return null;
@@ -40,7 +45,8 @@ export const authOptions: NextAuthOptions = {
           id: `${existingUser.id}`,
           name: existingUser.name,
           email: existingUser.email,
-          confirmed: existingUser.confirmed,
+          verified: existingUser.verified,
+          token: existingUser.token,
         };
       },
     }),

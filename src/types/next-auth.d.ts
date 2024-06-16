@@ -5,20 +5,23 @@ declare module "next-auth" {
     id: string;
     name: string;
     email: string;
-    confirmed: boolean | null;
+    verified: boolean | null;
+    token: string;
   }
   interface Session {
     user: User & {
       id: string;
       name: string;
       email: string;
-      confirmed: boolean;
+      verified: boolean;
+      token: string;
     };
     token: {
       id: string;
       name: string;
       email: string;
-      confirmed: boolean;
+      verified: boolean;
+      token: string;
     };
   }
 }
