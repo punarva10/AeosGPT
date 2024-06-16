@@ -1,9 +1,46 @@
+@import "material-icons/iconfont/material-icons.css";
+@import "material-icons/css/material-icons.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 html,
 body,
 :root {
   height: 100%;
+  background-color: white;
+}
+
+.cs-main-container > .cs-sidebar.cs-sidebar--left {
+  max-width: 190px;
+}
+
+.cs-conversation-header,
+.cs-message-input__content-editor-wrapper,
+.cs-message-input__content-editor {
+  @apply bg-blue-200;
+}
+
+.cs-message--incoming .cs-message__content,
+.cs-message.cs-message--incoming.cs-message--first .cs-message__content {
+  @apply rounded-bl-sm bg-blue-200 text-blue-950;
+}
+
+.cs-button--attachment,
+.cs-button--send,
+.cs-message-input__content-editor {
+  @apply text-blue-950;
+}
+
+.cs-message.cs-message--outgoing.cs-message--first .cs-message__content {
+  @apply rounded-br-sm bg-blue-950 text-white;
+}
+
+.cs-sidebar--left {
+  @apply mr-5 rounded-md bg-blue-950 p-2 text-white;
+}
+
+.cs-message {
+  @apply items-center;
 }
