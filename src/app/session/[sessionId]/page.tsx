@@ -20,7 +20,6 @@ const ChatSession = () => {
   const [visible, setVisible] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [typing, setTyping] = useState(false);
-  const [visibleInput, setVisibleInput] = useState(true);
   const [messages, setMessages] = useState<MessageModel[]>([
     {
       message: "Hello, I'm Sky! What can I help you with?",
@@ -142,10 +141,9 @@ const ChatSession = () => {
     { label: "Team 3", value: "team3" },
   ];
 
-  const [selectedTeam, setSelectedTeam] = useState(teams[0].value);
-  const handleTeamChange = (e: { value: SetStateAction<string> }) => {
-    setSelectedTeam(e.value);
-    // Handle additional logic for changing the team
+  const [selectedTeam, setSelectedTeam] = useState(teams[0].label);
+  const handleTeamChange = (e: string) => {
+    setSelectedTeam(e);
   };
 
   return (
@@ -160,8 +158,6 @@ const ChatSession = () => {
           right: 0,
           margin: "auto",
           zIndex: 10,
-          width: "100rem",
-          height: "70rem",
         }}
       >
         <div className={visible ? "visible" : "hidden"}>
@@ -189,7 +185,6 @@ const ChatSession = () => {
                     key={i}
                     className="cursor-pointer truncate rounded-sm p-1 hover:bg-blue-100 hover:text-blue-950"
                     onClick={() => {
-                      // handleSessionPick(session.sessionId);
                       setShowCreateForm(false);
                     }}
                   >
@@ -199,7 +194,11 @@ const ChatSession = () => {
               })}
               <div className="mt-3 pt-[30rem]">
                 <div className="dropdown dropdown-top w-full bg-blue-950">
-                  <div tabIndex={0} role="button" className="btn m-1 w-full bg-blue-950 border-blue-950 text-blue-100 hover:bg-blue-100 hover:text-blue-950">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn m-1 w-full bg-blue-950 border-blue-950 text-blue-100 hover:bg-blue-100 hover:text-blue-950"
+                  >
                     {selectedTeam}
                   </div>
                   <ul
@@ -207,8 +206,13 @@ const ChatSession = () => {
                     className="dropdown-content z-[1] menu p-2 shadow rounded-box w-48 bg-blue-100"
                   >
                     {teams.map((team, index) => (
-                      <li key={index} className=" bg-blue-100 text-blue-950 hover:bg-blue-950 hover:text-blue-100 rounded-md">
-                        <a onClick={() => handleTeamChange(team)}>{team.label}</a>
+                      <li
+                        key={index}
+                        className=" bg-blue-100 text-blue-950 hover:bg-blue-950 hover:text-blue-100 rounded-md"
+                      >
+                        <a onClick={() => handleTeamChange(team.label)}>
+                          {team.label}
+                        </a>
                       </li>
                     ))}
                   </ul>
@@ -218,10 +222,7 @@ const ChatSession = () => {
           </Sidebar>
         </div>
         {showCreateForm ? (
-          <CreateSessionForm
-            setShowCreateForm={setShowCreateForm}
-            // handleSessionPick={handleSessionPick}
-          />
+          <CreateSessionForm setShowCreateForm={setShowCreateForm} />
         ) : (
           <div className="w-full">
             <ChatContainer>
@@ -258,29 +259,15 @@ const ChatSession = () => {
               >
                 <div className="w-full">
                   {messages.map((message, i) => {
-                    return (
-                      <Message key={i} model={message}>
-                        {/* <Avatar
-                          src={
-                            message.direction === "incoming"
-                              ? "/images/avatar.png"
-                              : "/images/user.png"
-                          }
-                          name="Joe"
-                          status="available"
-                        /> */}
-                      </Message>
-                    );
+                    return <Message key={i} model={message}></Message>;
                   })}
                 </div>
               </MessageList>
-              {visibleInput && (
-                <MessageInput
-                  placeholder="Type message here"
-                  activateAfterChange
-                  // onSend={handleSend}
-                />
-              )}
+              <MessageInput
+                placeholder="Type message here"
+                activateAfterChange
+                // onSend={handleSend}
+              />
             </ChatContainer>
           </div>
         )}
