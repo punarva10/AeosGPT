@@ -19,7 +19,7 @@ const AuthForm = () => {
 
   useEffect(() => {
     if (session?.status === "authenticated") {
-      router.push("/conversations");
+      router.push("/chat");
     }
   }, [session?.status, router]);
 
@@ -43,26 +43,25 @@ const AuthForm = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
 
     if (variant === "REGISTER") {
       axios
         .post("/api/create-user", data)
-        .then(() => router.push("/"))
+        .then((res) => toggleVariant())
         .catch(() => toast.error("Something went wrong!"))
         .finally(() => setIsLoading(false));
     }
 
     if (variant === "LOGIN") {
-      axios
-        .post("/api/authenticate-user", data)
-        .then((res) => {
-          console.log(res);
-          // router.push("/");
-        })
-        .catch(() => toast.error("Something went wrong!"))
-        .finally(() => setIsLoading(false));
+      const signInData = await signIn("credentials", {
+        email: data.email,
+        password: data.password
+      })
+      if(signInData?.error) {
+        toast.error(signInData.error)
+      }
     }
   };
 
