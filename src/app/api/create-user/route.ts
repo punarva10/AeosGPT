@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
-import formData from "form-data";
-import Mailgun from "mailgun.js";
 import { NextResponse } from "next/server";
-import db from "../../../lib/db";
 import nodemailer from "nodemailer";
+import db from "../../../lib/db";
 
 const user = process.env.EMAIL;
 const pass = process.env.PASSWORD;

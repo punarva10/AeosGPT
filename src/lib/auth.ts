@@ -1,8 +1,7 @@
-import { NextAuthOptions, User } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import db from "./db";
-import toast from "react-hot-toast";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
