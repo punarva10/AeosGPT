@@ -13,7 +13,8 @@ model users {
   name        String        @db.VarChar(255)
   email       String        @unique @db.VarChar(255)
   password    String        @db.VarChar(255)
-  confirmed   Boolean?      @default(false)
+  verified   Boolean?      @default(false)
+  token       String       @unique
   memberships memberships[]
   teams       teams[]
 }
