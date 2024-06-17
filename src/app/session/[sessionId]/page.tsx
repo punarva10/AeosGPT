@@ -209,7 +209,7 @@ const ChatSessionFunction = () => {
           </Sidebar>
         </div>
         {showCreateForm ? (
-          <CreateSessionForm setShowCreateForm={setShowCreateForm} />
+          <CreateSessionForm setShowCreateForm={setShowCreateForm} teamId={selectedTeam?.teamId}/>
         ) : (
           <div className="w-full">
             <ChatContainer>

@@ -1,32 +1,81 @@
+import Input from "@/app/components/inputs/Input";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
+import { useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
-import { useState, FormEventHandler } from "react"
-
-const CreateSessionForm = ({
-  setShowCreateForm = (x: boolean) => {},
-  handleSessionPick = (sessionId: number) => {},
-}) => {
-  const [loading, setLoading] = useState<boolean>(false)
-
-  const handleCreateSession: FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
-    setLoading(true)
-
-    setLoading(false)
-    setShowCreateForm(false)
-
-  }
-
-  return (
-    <div className="grid w-full place-items-center rounded-md bg-blue-100">
-      <form className="flex flex-col gap-3" onSubmit={handleCreateSession}>
-        <h2 className="text-center font-bold">New Chat Session</h2>
-        <input type="text" placeholder="Title" name="title" className="border-1 rounded-sm border px-2 py-1 bg-white" />
-        <button className="border-1 rounded-sm border bg-white px-2 py-1" disabled={loading}>
-          {loading ? "Submitting..." : "Create"}
-        </button>
-      </form>
-    </div>
-  )
+interface CreateSessionFormProps {
+  setShowCreateForm: (x: boolean) => void;
+  teamId?: number;
 }
 
-export default CreateSessionForm
+
+const CreateSessionForm = ({ setShowCreateForm, teamId }: CreateSessionFormProps) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      title: "",
+    },
+  });
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    setIsLoading(true);
+
+    const updatedData = {
+      title: data.title,
+      teamId: teamId
+    }
+
+    console.log("hi", updatedData)
+
+    axios
+      .post("/api/create-session", updatedData)
+      .then((res) => {
+        const session = res.data.session;
+        router.push(`/session/${session.id}`);
+        localStorage.clear()
+        axios.post("/api/check-credit", data).catch(()=> {
+          toast.error("Something went wrong!");
+        })
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setShowCreateForm(false)
+      });
+  };
+
+  return (
+    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md pt-60">
+      <div className="bg-blue-950 px-4 py-8 shadow sm:rounded-lg sm:px-10">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            required
+            id="title"
+            label="Title"
+          />
+
+          <div>
+            <Button disabled={isLoading} type="submit" className="w-4rem border-green-400 bg-green-200 text-green-800 py-2 px-3 rounded-md">
+              {isLoading ? "Submitting..." : "Create"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateSessionForm;
