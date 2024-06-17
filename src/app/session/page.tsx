@@ -84,6 +84,7 @@ const ChatSessionFunction = () => {
 
   useEffect(() => {
     if (selectedTeam) {
+      console.log(selectedTeam)
       getSessionsOfTeam(selectedTeam.id);
       getCreditBalanceOfTeam(selectedTeam.id);
     }
@@ -104,6 +105,7 @@ const ChatSessionFunction = () => {
     if (selectedChatSession) {
       getConversationsOfSession(selectedChatSession.id);
       if (selectedTeam) {
+        console.log(selectedTeam)
         getSessionsOfTeam(selectedTeam.id);
         getCreditBalanceOfTeam(selectedTeam.id);
       }
@@ -274,16 +276,20 @@ const ChatSessionFunction = () => {
                         </div>
                       </div>
                       <div className="flex gap-2 text-sm">
-                      <Button label="Invite User to Team"
-                      icon="material-icons-round mi-person-add-alt-1" iconPos="right"
-                          className="border-1 rounded-lg border p-1.5 px-2 cursor-pointer bg-slate-100 border-slate-400 text-slate-800"
-                          pt = {{
-                            icon: {
-                              className: "pl-2 text-sm"
-                            }
-                          }}
-                        />
-                      
+                        {userDetails?.id === selectedTeam?.owner_id ? (
+                          <Button
+                            label="Invite User to Team"
+                            icon="material-icons-round mi-person-add-alt-1"
+                            iconPos="right"
+                            className="border-1 rounded-lg border p-1.5 px-2 cursor-pointer bg-slate-100 border-slate-400 text-slate-800"
+                            pt={{
+                              icon: {
+                                className: "pl-2 text-sm",
+                              },
+                            }}
+                          />
+                        ) : null}
+
                         <div
                           className={`border-1 rounded-sm border p-1.5 px-2 cursor-pointer ${
                             balanceCredits === 0
