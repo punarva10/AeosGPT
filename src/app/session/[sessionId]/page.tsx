@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   ChatContainer,
   ConversationHeader,
   MainContainer,
@@ -12,14 +11,16 @@ import {
   Sidebar,
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { SetStateAction, useState } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { Button } from "primereact/button";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import CreateSessionForm from "./create-session-form";
+import { Team } from "@/types/team";
+import { ChatSession } from "@/types/chat-session";
 
-const ChatSession = () => {
-  const [visible, setVisible] = useState(true);
-  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
-  const [typing, setTyping] = useState(false);
+const ChatSessionFunction = () => {
   const [messages, setMessages] = useState<MessageModel[]>([
     {
       message: "Hello, I'm Sky! What can I help you with?",
@@ -29,121 +30,56 @@ const ChatSession = () => {
     },
   ]);
 
-  const sessions = [
-    {
-      sessionId: 1,
-      customerId: 1,
-      title: "Therapy session related to esims",
-      category: "GENERAL",
-      isManualInterventionRequired: false,
-      status: "OPEN",
-      threadId: null,
-      runId: null,
-      isPublic: false,
-      isAnonymous: false,
-      createTime: "2024-06-02 16:23:39",
-      updateTime: "2024-06-02 16:23:39",
-      conversation: [
-        {
-          id: 1,
-          sessionId: 1,
-          userPrompt: "why am i here",
-          generatedResult: "why not?",
-          createTime: "2024-06-02 21:55:36",
-        },
-      ],
-    },
-    {
-      sessionId: 2,
-      customerId: 1,
-      title: "Why my esim no work??",
-      category: "ESIM_RELATED",
-      isManualInterventionRequired: true,
-      status: "AWAITING_INTERVENTION",
-      threadId: null,
-      runId: null,
-      isPublic: false,
-      isAnonymous: false,
-      createTime: "2024-06-02 16:23:39",
-      updateTime: "2024-06-02 16:23:39",
-      conversation: [
-        {
-          id: 3,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-        {
-          id: 4,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-        {
-          id: 5,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-      ],
-    },
-    {
-      sessionId: 3,
-      customerId: 1,
-      title: "Why my esim no work???",
-      category: "ESIM_RELATED",
-      isManualInterventionRequired: false,
-      status: "RESOLVED",
-      threadId: null,
-      runId: null,
-      isPublic: false,
-      isAnonymous: false,
-      createTime: "2024-06-02 16:23:39",
-      updateTime: "2024-06-02 16:23:39",
-      conversation: [
-        {
-          id: 6,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-        {
-          id: 7,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-        {
-          id: 8,
-          sessionId: 2,
-          userPrompt: "lets win thissssssssss",
-          generatedResult:
-            "sure, here are some results on how to win hackathons : ",
-          createTime: "2024-06-02 21:55:36",
-        },
-      ],
-    },
-  ];
+  const [visible, setVisible] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
+  const [typing, setTyping] = useState(false);
+  const [teams, setTeams] = useState<Team[] | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [chatSessions, setChatSessions] = useState<ChatSession[] | null>(null);
+  const [selectedChatSession, setSelectedChatSession] =
+    useState<ChatSession | null>(null);
+  const handleTeamChange = (team: Team) => {
+    setSelectedTeam(team);
+  };
+  const handleSessionChange = (session: ChatSession) => {
+    setSelectedChatSession(session);
+  };
 
-  const teams = [
-    { label: "Team 1", value: "team1" },
-    { label: "Team 2", value: "team2" },
-    { label: "Team 3", value: "team3" },
-  ];
+  const { data: session } = useSession();
+  const user = session?.user;
 
-  const [selectedTeam, setSelectedTeam] = useState(teams[0].label);
-  const handleTeamChange = (e: string) => {
-    setSelectedTeam(e);
+  useEffect(() => {
+    if (user) {
+      getTeamsOfUser();
+    }
+  }, [user]);
+
+  const getTeamsOfUser = async () => {
+    axios
+      .get("/api/get-teams")
+      .then((res) => {
+        setTeams(res.data.teams);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  useEffect(() => {
+    if (selectedTeam) {
+      getSessionsOfTeam(selectedTeam.teamId);
+    }
+  }, [selectedTeam]);
+
+  const getSessionsOfTeam = async (teamId: number) => {
+    axios
+      .get(`/api/get-sessions/${teamId}`)
+      .then((res) => {
+        setChatSessions(res.data.sessions);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
   };
 
   return (
@@ -162,56 +98,58 @@ const ChatSession = () => {
       >
         <div className={visible ? "visible" : "hidden"}>
           <Sidebar position="left">
-            <div className="flex flex-col gap-1 overflow-x-hidden px-3 pt-3 min-w-[13rem] max-w-[13rem] w-full">
-              <div className="flex justify-between pb-3">
-                <Button
-                  text
-                  icon="material-icons-round mi-arrow-back-ios text-3xl text-blue-100 font-semibold"
-                  onClick={() => {
-                    setVisible(!visible);
-                  }}
-                />
-                <Button
-                  text
-                  icon="material-icons-round mi-add-circle text-3xl text-blue-100 font-semibold"
-                  onClick={() => {
-                    setShowCreateForm(true);
-                  }}
-                />
-              </div>
-              {sessions.map((session, i) => {
-                return (
+            <div className="flex flex-col gap-1 overflow-x-hidden px-3 pt-3 min-w-[13rem] max-w-[13rem] w-full h-full">
+              <div className="flex flex-col flex-1">
+                <div className="flex justify-between pb-5">
+                  <Button
+                    text
+                    icon="material-icons-round mi-arrow-back-ios text-3xl text-blue-100 font-semibold"
+                    onClick={() => {
+                      setVisible(!visible);
+                    }}
+                  />
+                  <Button
+                    text
+                    icon="material-icons-round mi-add-circle text-3xl text-blue-100 font-semibold"
+                    onClick={() => {
+                      setShowCreateForm(true);
+                    }}
+                  />
+                </div>
+                {chatSessions?.map((session, i) => (
                   <div
                     key={i}
                     className="cursor-pointer truncate rounded-sm p-1 hover:bg-blue-100 hover:text-blue-950"
                     onClick={() => {
-                      setShowCreateForm(false);
+                      handleSessionChange(session);
                     }}
                   >
                     {session.title}
                   </div>
-                );
-              })}
-              <div className="mt-3 pt-[30rem]">
+                ))}
+              </div>
+              {/* Spacer div to push the last div to the bottom */}
+              <div className="flex-grow"></div>
+              <div className="mt-3">
                 <div className="dropdown dropdown-top w-full bg-blue-950">
                   <div
                     tabIndex={0}
                     role="button"
                     className="btn m-1 w-full bg-blue-950 border-blue-950 text-blue-100 hover:bg-blue-100 hover:text-blue-950"
                   >
-                    {selectedTeam}
+                    {selectedTeam?.teamName || "Select Team"}
                   </div>
                   <ul
                     tabIndex={0}
                     className="dropdown-content z-[1] menu p-2 shadow rounded-box w-48 bg-blue-100"
                   >
-                    {teams.map((team, index) => (
+                    {teams?.map((team, index) => (
                       <li
                         key={index}
-                        className=" bg-blue-100 text-blue-950 hover:bg-blue-950 hover:text-blue-100 rounded-md"
+                        className="bg-blue-100 text-blue-950 hover:bg-blue-950 hover:text-blue-100 rounded-md"
                       >
-                        <a onClick={() => handleTeamChange(team.label)}>
-                          {team.label}
+                        <a onClick={() => handleTeamChange(team)}>
+                          {team.teamName}
                         </a>
                       </li>
                     ))}
@@ -240,11 +178,13 @@ const ChatSession = () => {
                             }}
                           />
                         </div>
-                        <div>{"fdsadf".substring(0, 45)}...</div>
+                        <div>
+                          {selectedChatSession?.title?.substring(0, 45)}
+                        </div>
                       </div>
                       <div className="flex flex-col gap-2 text-sm">
                         <div className="border-1 rounded-sm border border-green-400 bg-green-200 p-1.5 px-2 text-green-800 cursor-pointer">
-                          Open
+                          {selectedTeam?.balance_credits} credits remaining
                         </div>
                       </div>
                     </div>
@@ -276,4 +216,4 @@ const ChatSession = () => {
   );
 };
 
-export default ChatSession;
+export default ChatSessionFunction;
