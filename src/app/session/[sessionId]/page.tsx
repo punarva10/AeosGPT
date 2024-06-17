@@ -19,30 +19,32 @@ import toast from "react-hot-toast";
 import CreateSessionForm from "./create-session-form";
 import { Team } from "@/types/team";
 import { ChatSession } from "@/types/chat-session";
+import { Conversation } from "@/types/conversation";
 
 const ChatSessionFunction = () => {
-  const [messages, setMessages] = useState<MessageModel[]>([
-    {
-      message: "Hello, I'm Sky! What can I help you with?",
-      sender: "Sky",
-      direction: "incoming",
-      position: 0,
-    },
-  ]);
-
   const [visible, setVisible] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [typing, setTyping] = useState(false);
   const [teams, setTeams] = useState<Team[] | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(() => {
+    const storedTeam = localStorage.getItem("selectedTeam");
+    return storedTeam ? JSON.parse(storedTeam) : null;
+  });
   const [chatSessions, setChatSessions] = useState<ChatSession[] | null>(null);
   const [selectedChatSession, setSelectedChatSession] =
-    useState<ChatSession | null>(null);
+    useState<ChatSession | null>(() => {
+      const storedSession = localStorage.getItem("selectedChatSession");
+      return storedSession ? JSON.parse(storedSession) : null;
+    });
+  const [messages, setMessages] = useState<MessageModel[] | null>(null);
+
   const handleTeamChange = (team: Team) => {
     setSelectedTeam(team);
+    localStorage.setItem("selectedTeam", JSON.stringify(team));
   };
   const handleSessionChange = (session: ChatSession) => {
     setSelectedChatSession(session);
+    localStorage.setItem("selectedChatSession", JSON.stringify(session));
   };
 
   const { data: session } = useSession();
@@ -76,6 +78,53 @@ const ChatSessionFunction = () => {
       .get(`/api/get-sessions/${teamId}`)
       .then((res) => {
         setChatSessions(res.data.sessions);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  useEffect(() => {
+    if (selectedChatSession) {
+      getConversationsOfSession(selectedChatSession.id);
+    }
+  }, [selectedChatSession]);
+
+  const getConversationsOfSession = async (sessionId: number) => {
+    axios
+      .get(`/api/get-conversations/${sessionId}`)
+      .then((res) => {
+        const conversations: Conversation[] = res.data.conversations;
+        const messageModels: MessageModel[] = conversations.flatMap(
+          (conversation, index) => [
+            {
+              message: conversation.user_prompt,
+              sender: "User",
+              direction: "outgoing" as const,
+              position: 0,
+            },
+            {
+              message: conversation.generated_result,
+              sender: "Aeos",
+              direction: "incoming" as const,
+              position: 0,
+            },
+          ]
+        );
+        setMessages(messageModels);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  const getAiResponse = async (message: string) => {
+    setTyping(true)
+    axios
+      .get(`/api/get-ai-response/${selectedChatSession?.id}/${message}`)
+      .then((res) => {
+        getConversationsOfSession(selectedChatSession!.id)
+        setTyping(false)
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -193,12 +242,12 @@ const ChatSessionFunction = () => {
               </ConversationHeader>
               <MessageList
                 typingIndicator={
-                  typing ? <TypingIndicator content="Sky is typing" /> : null
+                  typing ? <TypingIndicator content="Aeos is typing" /> : null
                 }
-                className="pb-24"
+                className="pb-10"
               >
                 <div className="w-full">
-                  {messages.map((message, i) => {
+                  {messages?.map((message, i) => {
                     return <Message key={i} model={message}></Message>;
                   })}
                 </div>
@@ -206,7 +255,7 @@ const ChatSessionFunction = () => {
               <MessageInput
                 placeholder="Type message here"
                 activateAfterChange
-                // onSend={handleSend}
+                onSend={getAiResponse}
               />
             </ChatContainer>
           </div>
