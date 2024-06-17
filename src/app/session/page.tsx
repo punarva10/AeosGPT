@@ -20,6 +20,7 @@ import CreateSessionForm from "./create-session-form";
 import { Team } from "@/types/team";
 import { ChatSession } from "@/types/chat-session";
 import { Conversation } from "@/types/conversation";
+import { UserWithDetails } from "@/types/user-with-details";
 
 const ChatSessionFunction = () => {
   const [visible, setVisible] = useState(true);
@@ -37,6 +38,8 @@ const ChatSessionFunction = () => {
       return storedSession ? JSON.parse(storedSession) : null;
     });
   const [messages, setMessages] = useState<MessageModel[] | null>(null);
+  const [balanceCredits, setBalanceCredits] = useState<number | null>(null);
+  const [userDetails, setUserDetails] = useState<UserWithDetails | null>(null);
 
   const handleTeamChange = (team: Team) => {
     setSelectedTeam(team);
@@ -52,9 +55,21 @@ const ChatSessionFunction = () => {
 
   useEffect(() => {
     if (user) {
+      getUserDetails();
       getTeamsOfUser();
     }
   }, [user]);
+
+  const getUserDetails = async () => {
+    axios
+      .get("/api/get-user-details")
+      .then((res) => {
+        setUserDetails(res.data.user);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
 
   const getTeamsOfUser = async () => {
     axios
@@ -69,7 +84,8 @@ const ChatSessionFunction = () => {
 
   useEffect(() => {
     if (selectedTeam) {
-      getSessionsOfTeam(selectedTeam.teamId);
+      getSessionsOfTeam(selectedTeam.id);
+      getCreditBalanceOfTeam(selectedTeam.id);
     }
   }, [selectedTeam]);
 
@@ -87,6 +103,10 @@ const ChatSessionFunction = () => {
   useEffect(() => {
     if (selectedChatSession) {
       getConversationsOfSession(selectedChatSession.id);
+      if (selectedTeam) {
+        getSessionsOfTeam(selectedTeam.id);
+        getCreditBalanceOfTeam(selectedTeam.id);
+      }
     }
   }, [selectedChatSession]);
 
@@ -119,12 +139,23 @@ const ChatSessionFunction = () => {
   };
 
   const getAiResponse = async (message: string) => {
-    setTyping(true)
+    setTyping(true);
     axios
       .get(`/api/get-ai-response/${selectedChatSession?.id}/${message}`)
       .then((res) => {
-        getConversationsOfSession(selectedChatSession!.id)
-        setTyping(false)
+        getConversationsOfSession(selectedChatSession!.id);
+        setTyping(false);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  const getCreditBalanceOfTeam = async (teamId: number) => {
+    axios
+      .get(`/api/get-balance-credits/${teamId}`)
+      .then((res) => {
+        setBalanceCredits(res.data.balance_credits);
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -165,17 +196,24 @@ const ChatSessionFunction = () => {
                     }}
                   />
                 </div>
-                {chatSessions?.map((session, i) => (
-                  <div
-                    key={i}
-                    className="cursor-pointer truncate rounded-sm p-1 hover:bg-blue-100 hover:text-blue-950"
-                    onClick={() => {
-                      handleSessionChange(session);
-                    }}
-                  >
-                    {session.title}
-                  </div>
-                ))}
+                {chatSessions
+                  ?.slice()
+                  .reverse()
+                  .map((session, i) => (
+                    <div
+                      key={i}
+                      className={`cursor-pointer truncate rounded-sm p-1 hover:bg-blue-100 hover:text-blue-950 mb-2 ${
+                        session.title === selectedChatSession?.title
+                          ? "bg-blue-100 text-blue-950"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        handleSessionChange(session);
+                      }}
+                    >
+                      {session.title}
+                    </div>
+                  ))}
               </div>
               {/* Spacer div to push the last div to the bottom */}
               <div className="flex-grow"></div>
@@ -186,7 +224,7 @@ const ChatSessionFunction = () => {
                     role="button"
                     className="btn m-1 w-full bg-blue-950 border-blue-950 text-blue-100 hover:bg-blue-100 hover:text-blue-950"
                   >
-                    {selectedTeam?.teamName || "Select Team"}
+                    {selectedTeam?.name || "Select Team"}
                   </div>
                   <ul
                     tabIndex={0}
@@ -198,7 +236,7 @@ const ChatSessionFunction = () => {
                         className="bg-blue-100 text-blue-950 hover:bg-blue-950 hover:text-blue-100 rounded-md"
                       >
                         <a onClick={() => handleTeamChange(team)}>
-                          {team.teamName}
+                          {team.name}
                         </a>
                       </li>
                     ))}
@@ -209,7 +247,11 @@ const ChatSessionFunction = () => {
           </Sidebar>
         </div>
         {showCreateForm ? (
-          <CreateSessionForm setShowCreateForm={setShowCreateForm} teamId={selectedTeam?.teamId}/>
+          <CreateSessionForm
+            setShowCreateForm={setShowCreateForm}
+            setSelectedChatSession={setSelectedChatSession}
+            teamId={selectedTeam?.id}
+          />
         ) : (
           <div className="w-full">
             <ChatContainer>
@@ -231,9 +273,25 @@ const ChatSessionFunction = () => {
                           {selectedChatSession?.title?.substring(0, 45)}
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2 text-sm">
-                        <div className="border-1 rounded-sm border border-green-400 bg-green-200 p-1.5 px-2 text-green-800 cursor-pointer">
-                          {selectedTeam?.balance_credits} credits remaining
+                      <div className="flex gap-2 text-sm">
+                      <Button label="Invite User to Team"
+                      icon="material-icons-round mi-person-add-alt-1" iconPos="right"
+                          className="border-1 rounded-lg border p-1.5 px-2 cursor-pointer bg-slate-100 border-slate-400 text-slate-800"
+                          pt = {{
+                            icon: {
+                              className: "pl-2 text-sm"
+                            }
+                          }}
+                        />
+                      
+                        <div
+                          className={`border-1 rounded-sm border p-1.5 px-2 cursor-pointer ${
+                            balanceCredits === 0
+                              ? "border-red-400 bg-red-200 text-red-800"
+                              : "border-green-400 bg-green-200 text-green-800"
+                          }`}
+                        >
+                          {balanceCredits} credits remaining
                         </div>
                       </div>
                     </div>

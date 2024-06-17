@@ -1,4 +1,5 @@
 import Input from "@/app/components/inputs/Input";
+import { ChatSession } from "@/types/chat-session";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
@@ -8,11 +9,12 @@ import { toast } from "react-hot-toast";
 
 interface CreateSessionFormProps {
   setShowCreateForm: (x: boolean) => void;
+  setSelectedChatSession: (x:ChatSession) => void;
   teamId?: number;
 }
 
 
-const CreateSessionForm = ({ setShowCreateForm, teamId }: CreateSessionFormProps) => {
+const CreateSessionForm = ({ setShowCreateForm, setSelectedChatSession, teamId }: CreateSessionFormProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -38,12 +40,13 @@ const CreateSessionForm = ({ setShowCreateForm, teamId }: CreateSessionFormProps
     axios
       .post("/api/create-session", updatedData)
       .then((res) => {
-        const session = res.data.session;
-        router.push(`/session/${session.id}`);
-        localStorage.clear()
         axios.post("/api/check-credit", {teamId}).catch(()=> {
           toast.error("Something went wrong!");
         })
+        const session = res.data.session;
+        localStorage.setItem("selectedChatSession", JSON.stringify(session));
+        setSelectedChatSession(session)
+        router.push(`/session`);
       })
       .catch(() => {
         toast.error("Something went wrong!");

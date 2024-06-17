@@ -21,11 +21,13 @@ export async function GET(
   }
 
   try {
-    const sessions = await db.sessions.findMany({
-      where: { team_id: parseInt(teamId) },
+    const team = await db.teams.findUnique({
+      where: { id: parseInt(teamId) },
     });
 
-    return NextResponse.json({ sessions }, { status: 201 });
+    const balance_credits = team?.balance_credits;
+
+    return NextResponse.json({ balance_credits }, { status: 201 });
   } catch (error) {
     console.error(error);
 
