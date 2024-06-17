@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       from: "Punarv Dinakar",
       to: newUser.email,
       subject: "Please Activate Your Account",
-      text: `Hello ${newUser.name}, please activate your account by clicking on this link: http://localhost:3000/activate/${newUser.token}`,
+      text: `Hello ${newUser.name}, please activate your account by clicking on this link: https://aeos-gpt.vercel.app/activate/${newUser.token}`,
     };
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
