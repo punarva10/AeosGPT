@@ -3,8 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Conversation } from "@/types/conversation";
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: { sessionId: string } }
+) {
+  const { sessionId } = params;
+
   if (request.method !== "GET") {
     return NextResponse.json(
       { message: "Method not allowed" },
@@ -23,30 +29,11 @@ export async function GET(request: Request) {
   });
 
   try {
-    const memberships = await db.memberships.findMany({
-      where: { user_id: user?.id },
+    const conversations: Conversation[] = await db.conversations.findMany({
+      where: { session_id: parseInt(sessionId) },
     });
 
-    const teamIds = memberships.map((membership) => {
-      return membership.team_id;
-    });
-
-    const teams = await Promise.all(
-      teamIds.map(async (teamId) => {
-        const teamData = await db.teams.findUnique({
-          where: {
-            id: teamId,
-          },
-        });
-        return {
-          teamId,
-          teamName: teamData?.name,
-          balance_credits: teamData?.balance_credits,
-        };
-      })
-    );
-
-    return NextResponse.json({ teams }, { status: 201 });
+    return NextResponse.json({ conversations }, { status: 201 });
   } catch (error) {
     console.error(error);
 
