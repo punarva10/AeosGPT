@@ -41,7 +41,7 @@ const CreateSessionForm = ({ setShowCreateForm, teamId }: CreateSessionFormProps
         const session = res.data.session;
         router.push(`/session/${session.id}`);
         localStorage.clear()
-        axios.post("/api/check-credit", data).catch(()=> {
+        axios.post("/api/check-credit", {teamId}).catch(()=> {
           toast.error("Something went wrong!");
         })
       })
