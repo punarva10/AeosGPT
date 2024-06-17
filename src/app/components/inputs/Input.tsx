@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
           text-sm 
           font-medium 
           leading-6 
-          text-gray-900
+          text-white
         "
       >
         {label}
@@ -51,6 +51,7 @@ const Input: React.FC<InputProps> = ({
             form-input
             block 
             w-full 
+            bg-white
             rounded-md 
             border-0 
             p-1.5 
