@@ -39,8 +39,8 @@ export async function GET(request: Request) {
           },
         });
         return {
-          teamId,
-          teamName: teamData?.name,
+          id: teamId,
+          name: teamData?.name,
           balance_credits: teamData?.balance_credits,
         };
       })
