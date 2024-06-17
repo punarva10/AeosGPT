@@ -15,7 +15,7 @@ const Navbar = async () => {
       {session?.user ? (
         <UserAccountnav />
       ) : (
-        <Link href="/auth">Sign in</Link>
+        <Link href="/auth" className="text-black">Sign in</Link>
       )}
     </div>
   );
