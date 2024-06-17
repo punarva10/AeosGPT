@@ -22,15 +22,6 @@ export async function POST(request: Request) {
 
   console.log(teamId, title);
 
-  const userDetails = await db.users.findUnique({
-    where: {
-      email: session.user.email,
-    },
-  });
-
-  const user = process.env.EMAIL;
-  const pass = process.env.PASSWORD;
-
   try {
     const team = await db.teams.findUnique({
       where: { id: teamId },

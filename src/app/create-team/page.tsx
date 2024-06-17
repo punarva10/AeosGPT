@@ -29,8 +29,10 @@ const CreateTeamPage = () => {
     axios
       .post("/api/create-team", data)
       .then((res) => {
-        const {chatSession} = res.data
-        router.push(`/session/${chatSession.id}`);
+        const {team, chatSession} = res.data
+        localStorage.setItem("selectedTeam", JSON.stringify(team));
+        localStorage.setItem("selectedChatSession", JSON.stringify(chatSession));
+        router.push(`/session`);
       })
       .catch(() => {
         toast.error("Something went wrong!");

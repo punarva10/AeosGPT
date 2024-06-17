@@ -1,5 +1,6 @@
 export interface Team {
-  teamName: string;
-  teamId: number;
+  name: string;
+  id: number;
   balance_credits: number;
+  owner_id: number;
 }
