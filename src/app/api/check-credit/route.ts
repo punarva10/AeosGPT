@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         from: "Punarv Dinakar",
         to: userDetails?.email,
         subject: `Your credits for today in team ${team?.name} are emptied`,
-        text: `Hello ${userDetails?.name}, our credits for today in team ${team?.name} are emptied. Please wait till it recharges or use a different team to create a session.`,
+        text: `Hello ${userDetails?.name}, your credits for today in team ${team?.name} are emptied. Please wait till it recharges or use a different team to create a session.`,
       };
       await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

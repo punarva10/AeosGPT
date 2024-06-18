@@ -56,9 +56,7 @@ const ChatSessionFunction = () => {
   const handleEmailAddClick = () => {
     if (email) {
       addMemberToTeam(email);
-      const modal = document.getElementById(
-        "my_modal_2"
-      ) as HTMLDialogElement;
+      const modal = document.getElementById("my_modal_2") as HTMLDialogElement;
       if (modal) {
         modal.close();
       }
@@ -66,7 +64,6 @@ const ChatSessionFunction = () => {
       alert("Email address is required");
     }
   };
-
 
   const { data: session } = useSession();
   const user = session?.user;
@@ -102,16 +99,34 @@ const ChatSessionFunction = () => {
 
   useEffect(() => {
     if (selectedTeam) {
-      getSessionsOfTeam(selectedTeam.id);
+      getSessionsAndSetDefaultOfTeam(selectedTeam.id);
       getCreditBalanceOfTeam(selectedTeam.id);
     }
   }, [selectedTeam]);
 
-  const getSessionsOfTeam = async (teamId: number) => {
+  const getSessionsAndSetDefaultOfTeam = (teamId: number) => {
     axios
       .get(`/api/get-sessions/${teamId}`)
       .then((res) => {
-        setChatSessions(res.data.sessions);
+        const sessions = res.data.sessions
+        setChatSessions(sessions);
+        console.log(sessions)
+
+        // Default set selected chat session
+        setSelectedChatSession(sessions[sessions.length -1])
+        localStorage.setItem("selectedChatSession", JSON.stringify(sessions[sessions.length - 1]))
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  const getSessionsOfTeam = (teamId: number) => {
+    axios
+      .get(`/api/get-sessions/${teamId}`)
+      .then((res) => {
+        const sessions = res.data.sessions
+        setChatSessions(sessions);
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -183,9 +198,12 @@ const ChatSessionFunction = () => {
   const addMemberToTeam = (email: string) => {
     const data = {
       email: email,
-      teamId: selectedTeam?.id
-    }
-    axios.post("/api/add-member", data)
+      teamId: selectedTeam?.id,
+    };
+    axios
+      .post("/api/send-invitation", data)
+      .then(() => console.log("Mail sent successfully"))
+      .catch((error) => console.log(error))
   };
 
   return (

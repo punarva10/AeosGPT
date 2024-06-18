@@ -7,11 +7,12 @@ import React from 'react'
 
 const UserAccountnav = () => {
   return (
-    <Button danger onClick={() => signOut({
+    <Button danger onClick={() => {
+      signOut({
         redirect:true,
         callbackUrl: `${window.location.origin}/auth`
     }
-    )}>Sign Out</Button>
+    )}}>Sign Out</Button>
   )
 }
 
