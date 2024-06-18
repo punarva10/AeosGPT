@@ -32,10 +32,11 @@ const Input: React.FC<InputProps> = ({
         htmlFor={id} 
         className="
           block 
-          text-sm 
           font-medium 
           leading-6 
           text-blue-950
+          text-center
+          text-lg
         "
       >
         {label}
