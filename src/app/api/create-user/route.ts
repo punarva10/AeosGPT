@@ -60,7 +60,6 @@ export async function POST(request: Request) {
         }
       });
     });
-    alert("Please verify your email address.");
     console.log("Email sent ");
 
     const { password: newUserPassword, ...rest } = newUser;
