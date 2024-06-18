@@ -108,13 +108,16 @@ const ChatSessionFunction = () => {
     axios
       .get(`/api/get-sessions/${teamId}`)
       .then((res) => {
-        const sessions = res.data.sessions
+        const sessions = res.data.sessions;
         setChatSessions(sessions);
-        console.log(sessions)
+        console.log(sessions);
 
         // Default set selected chat session
-        setSelectedChatSession(sessions[sessions.length -1])
-        localStorage.setItem("selectedChatSession", JSON.stringify(sessions[sessions.length - 1]))
+        setSelectedChatSession(sessions[sessions.length - 1]);
+        localStorage.setItem(
+          "selectedChatSession",
+          JSON.stringify(sessions[sessions.length - 1])
+        );
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -125,7 +128,7 @@ const ChatSessionFunction = () => {
     axios
       .get(`/api/get-sessions/${teamId}`)
       .then((res) => {
-        const sessions = res.data.sessions
+        const sessions = res.data.sessions;
         setChatSessions(sessions);
       })
       .catch(() => {
@@ -203,7 +206,7 @@ const ChatSessionFunction = () => {
     axios
       .post("/api/send-invitation", data)
       .then(() => console.log("Mail sent successfully"))
-      .catch((error) => console.log(error))
+      .catch((error) => console.log(error));
   };
 
   return (
