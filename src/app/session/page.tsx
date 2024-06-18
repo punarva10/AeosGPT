@@ -40,6 +40,7 @@ const ChatSessionFunction = () => {
   const [messages, setMessages] = useState<MessageModel[] | null>(null);
   const [balanceCredits, setBalanceCredits] = useState<number | null>(null);
   const [userDetails, setUserDetails] = useState<UserWithDetails | null>(null);
+  const [email, setEmail] = useState("");
 
   const handleTeamChange = (team: Team) => {
     setSelectedTeam(team);
@@ -49,6 +50,23 @@ const ChatSessionFunction = () => {
     setSelectedChatSession(session);
     localStorage.setItem("selectedChatSession", JSON.stringify(session));
   };
+  const handleEmailChange = (e: any) => {
+    setEmail(e.target.value);
+  };
+  const handleEmailAddClick = () => {
+    if (email) {
+      addMemberToTeam(email);
+      const modal = document.getElementById(
+        "my_modal_2"
+      ) as HTMLDialogElement;
+      if (modal) {
+        modal.close();
+      }
+    } else {
+      alert("Email address is required");
+    }
+  };
+
 
   const { data: session } = useSession();
   const user = session?.user;
@@ -84,7 +102,6 @@ const ChatSessionFunction = () => {
 
   useEffect(() => {
     if (selectedTeam) {
-      console.log(selectedTeam)
       getSessionsOfTeam(selectedTeam.id);
       getCreditBalanceOfTeam(selectedTeam.id);
     }
@@ -105,7 +122,6 @@ const ChatSessionFunction = () => {
     if (selectedChatSession) {
       getConversationsOfSession(selectedChatSession.id);
       if (selectedTeam) {
-        console.log(selectedTeam)
         getSessionsOfTeam(selectedTeam.id);
         getCreditBalanceOfTeam(selectedTeam.id);
       }
@@ -162,6 +178,14 @@ const ChatSessionFunction = () => {
       .catch(() => {
         toast.error("Something went wrong!");
       });
+  };
+
+  const addMemberToTeam = (email: string) => {
+    const data = {
+      email: email,
+      teamId: selectedTeam?.id
+    }
+    axios.post("/api/add-member", data)
   };
 
   return (
@@ -281,6 +305,14 @@ const ChatSessionFunction = () => {
                             label="Invite User to Team"
                             icon="material-icons-round mi-person-add-alt-1"
                             iconPos="right"
+                            onClick={() => {
+                              const modal = document.getElementById(
+                                "my_modal_2"
+                              ) as HTMLDialogElement;
+                              if (modal) {
+                                modal.showModal();
+                              }
+                            }}
                             className="border-1 rounded-lg border p-1.5 px-2 cursor-pointer bg-slate-100 border-slate-400 text-slate-800"
                             pt={{
                               icon: {
@@ -289,6 +321,31 @@ const ChatSessionFunction = () => {
                             }}
                           />
                         ) : null}
+                        <dialog id="my_modal_2" className="modal">
+                          <div className="modal-box bg-blue-950">
+                            <h3 className="font-bold text-lg text-white">
+                              Enter Email Address of User
+                            </h3>
+                            <div className="flex flex-col">
+                              <input
+                                type="email"
+                                className="h-9 w-full bg-white mt-5 pl-3"
+                                value={email}
+                                onChange={handleEmailChange}
+                                required
+                              />
+                              <button
+                                className="border-green-400 bg-green-200 text-green-800 w-13 h-9 ml-96 mt-5 rounded-md cursor-pointer"
+                                onClick={handleEmailAddClick}
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                          <form method="dialog" className="modal-backdrop">
+                            <button>Close</button>
+                          </form>
+                        </dialog>
 
                         <div
                           className={`border-1 rounded-sm border p-1.5 px-2 cursor-pointer ${
