@@ -8,6 +8,7 @@ import React from 'react'
 const UserAccountnav = () => {
   return (
     <Button danger onClick={() => {
+      localStorage.clear()
       signOut({
         redirect:true,
         callbackUrl: `${window.location.origin}/auth`
