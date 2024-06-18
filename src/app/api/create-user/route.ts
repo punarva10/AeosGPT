@@ -54,7 +54,6 @@ export async function POST(request: Request) {
       }
     });
 
-    alert("Please Verify Your email address.");
     const { password: newUserPassword, ...rest } = newUser;
 
     return NextResponse.json(

@@ -82,7 +82,6 @@ export async function POST(request: Request) {
         console.log("Email sent: ", info.response);
       }
     });
-    alert("Invitation sent successfully.");
     return NextResponse.json({ message: "Email sent" }, { status: 200 });
   } catch (error) {
     console.error(error);
