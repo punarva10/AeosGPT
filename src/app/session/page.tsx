@@ -241,7 +241,6 @@ const ChatSessionFunction = () => {
           left: 0,
           right: 0,
           margin: "auto",
-          zIndex: 10,
         }}
       >
         <div className={visible ? "visible" : "hidden"}>
