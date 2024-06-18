@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 export async function POST(request: Request) {
+  console.log("at start");
   if (request.method !== "POST") {
     return NextResponse.json(
       { message: "Method not allowed" },
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
       email: session.user.email,
     },
   });
-
+  console.log("before try");
   try {
     const team = await db.teams.findUnique({
       where: { id: teamId },
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
         subject: `Your credits for today in team ${team?.name} are emptied`,
         text: `Hello ${userDetails?.name}, your credits for today in team ${team?.name} are emptied. Please wait till it recharges or use a different team to create a session.`,
       };
+      console.log("Going to try and send mail now");
       await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.error("Error sending email: ", error);

@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 export async function POST(request: Request) {
+  console.log("at start");
   if (request.method !== "POST") {
     return NextResponse.json(
       { message: "Method not allowed" },
@@ -31,6 +32,8 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
+
+  console.log("before try");
 
   try {
     const team = await db.teams.findUnique({
@@ -71,6 +74,7 @@ export async function POST(request: Request) {
         team?.token
       }?userId=${encodeURIComponent(receiverUser!.id)}`,
     };
+    console.log("Going to try and send email now");
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email: ", error);
@@ -78,6 +82,7 @@ export async function POST(request: Request) {
         console.log("Email sent: ", info.response);
       }
     });
+    return NextResponse.json({ message: "Email sent" }, { status: 200 });
   } catch (error) {
     console.error(error);
 
