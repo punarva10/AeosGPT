@@ -20,8 +20,6 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { teamId } = body;
 
-  console.log("HII", teamId);
-
   const userDetails = await db.users.findUnique({
     where: {
       email: session.user.email,

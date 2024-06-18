@@ -35,8 +35,6 @@ const CreateSessionForm = ({ setShowCreateForm, setSelectedChatSession, teamId }
       teamId: teamId
     }
 
-    console.log("hi", updatedData)
-
     axios
       .post("/api/create-session", updatedData)
       .then((res) => {
