@@ -3,4 +3,5 @@ export interface Team {
   id: number;
   balance_credits: number;
   owner_id: number;
+  token: string;
 }

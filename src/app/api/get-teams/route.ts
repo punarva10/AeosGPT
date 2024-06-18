@@ -42,6 +42,7 @@ export async function GET(request: Request) {
           id: teamId,
           name: teamData?.name,
           balance_credits: teamData?.balance_credits,
+          owner_id: teamData?.owner_id,
         };
       })
     );
