@@ -233,7 +233,7 @@ const ChatSessionFunction = () => {
   return (
     <>
       <MainContainer
-        className="h-[90%] w-full border-none rounded-md p-8 font-custom shadow-xl"
+        className="h-[90%] w-full border-none rounded-md p-8 font-custom px-10 bg-gray-100 pt-4"
         style={{
           position: "fixed",
           top: "calc(3rem)",

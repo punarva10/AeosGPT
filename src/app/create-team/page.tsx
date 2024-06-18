@@ -43,7 +43,7 @@ const CreateTeamPage = () => {
   };
 
   return (
-    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md pt-80">
+    <div className="sm:mx-auto sm:w-full sm:max-w-md h-[80%] flex flex-col justify-center">
       <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <Input

@@ -5,10 +5,9 @@ const Auth = () => {
     <div 
       className="
         flex 
-        min-h-full 
+        h-[80%] 
         flex-col 
         justify-center 
-        py-12 
         sm:px-6 
         lg:px-8 
         bg-gray-100
