@@ -12,9 +12,6 @@ export async function GET(
 ) {
   const { sessionId, userPrompt } = params;
 
-  console.log("sessionId", sessionId);
-  console.log("user_prompt", userPrompt);
-
   if (request.method !== "GET") {
     return NextResponse.json(
       { message: "Method not allowed" },
@@ -28,7 +25,6 @@ export async function GET(
 
   try {
     const groq_api_key = process.env.GROQ_API_KEY;
-    console.log("groq_key", groq_api_key);
     const groq = new Groq({
       apiKey: groq_api_key,
     });
@@ -44,7 +40,6 @@ export async function GET(
     });
 
     const aiResponse = groQResponse.choices[0]?.message?.content ?? "";
-    console.log("aiResponse", aiResponse);
     await db.conversations.create({
       data: {
         session_id: parseInt(sessionId),
@@ -52,7 +47,6 @@ export async function GET(
         generated_result: aiResponse,
       },
     });
-    console.log("Done");
 
     return NextResponse.json({ aiResponse }, { status: 201 });
   } catch (error) {

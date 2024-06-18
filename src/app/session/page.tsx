@@ -110,7 +110,6 @@ const ChatSessionFunction = () => {
       .then((res) => {
         const sessions = res.data.sessions;
         setChatSessions(sessions);
-        console.log(sessions);
 
         // Default set selected chat session
         setSelectedChatSession(sessions[sessions.length - 1]);
@@ -175,11 +174,33 @@ const ChatSessionFunction = () => {
   };
 
   const getAiResponse = async (message: string) => {
+    const formatted_user_message: MessageModel = {
+      message: message,
+      sender: "User",
+      direction: "outgoing" as const,
+      position: 0,
+    };
+    const newMessages: MessageModel[] = messages
+      ? [...messages, formatted_user_message]
+      : [formatted_user_message];
+    setMessages(newMessages);
+
     setTyping(true);
     axios
       .get(`/api/get-ai-response/${selectedChatSession?.id}/${message}`)
       .then((res) => {
-        getConversationsOfSession(selectedChatSession!.id);
+        const aiMessage = res.data.aiResponse;
+        const formatted_ai_message: MessageModel = {
+          message: aiMessage,
+          sender: "Aeos",
+          direction: "incoming" as const,
+          position: 0,
+        };
+        if (messages) {
+          setMessages(prevMessages => {
+            return prevMessages? [...prevMessages, formatted_ai_message] : [formatted_ai_message];
+          });
+        }
         setTyping(false);
       })
       .catch(() => {
@@ -206,7 +227,7 @@ const ChatSessionFunction = () => {
     axios
       .post("/api/send-invitation", data)
       .then(() => console.log("Mail sent successfully"))
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   };
 
   return (
