@@ -45,6 +45,7 @@ export async function POST(request: Request) {
       subject: "Please Activate Your Account",
       text: `Hello ${newUser.name}, please activate your account by clicking on this link: https://aeos-gpt.vercel.app/activate/${newUser.token}`,
     };
+    console.log("Going to try and send email now");
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email: ", error);
