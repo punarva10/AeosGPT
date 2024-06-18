@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 
 export async function POST(request: Request) {
   if (request.method !== "POST") {
@@ -29,11 +30,14 @@ export async function POST(request: Request) {
     },
   });
 
+  const token = `${randomUUID()}${randomUUID()}`.replace(/-/g, "");
+
   try {
     const team = await db.teams.create({
       data: {
         name: teamName,
         owner_id: user!.id,
+        token: token,
       },
     });
 
