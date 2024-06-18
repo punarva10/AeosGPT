@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       secure: true,
       auth: {
         user: "useless.fake.acnt@gmail.com",
-        pass: "vdhd cstj sslu gpjq",
+        pass: "wfwm ulgr taid fsdo",
       },
     });
     const mailOptions = {
