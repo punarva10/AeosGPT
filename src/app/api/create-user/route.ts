@@ -3,9 +3,6 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import db from "../../../lib/db";
 
-const user = process.env.EMAIL;
-const pass = process.env.PASSWORD;
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -38,8 +35,8 @@ export async function POST(request: Request) {
       port: 465,
       secure: true,
       auth: {
-        user,
-        pass,
+        user: "useless.fake.acnt@gmail.com",
+        pass: "vdhd cstj sslu gpjq",
       },
     });
     const mailOptions = {

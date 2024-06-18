@@ -25,9 +25,6 @@ export async function POST(request: Request) {
     },
   });
 
-  const user = process.env.EMAIL;
-  const pass = process.env.PASSWORD;
-
   try {
     const team = await db.teams.findUnique({
       where: { id: teamId },
@@ -40,8 +37,8 @@ export async function POST(request: Request) {
         port: 465,
         secure: true,
         auth: {
-          user,
-          pass,
+          user: "useless.fake.acnt@gmail.com",
+          pass: "vdhd cstj sslu gpjq",
         },
       });
       const mailOptions = {

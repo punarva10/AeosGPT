@@ -4,9 +4,6 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-const user = process.env.EMAIL;
-const pass = process.env.PASSWORD;
-
 export async function POST(request: Request) {
   if (request.method !== "POST") {
     return NextResponse.json(
@@ -58,8 +55,8 @@ export async function POST(request: Request) {
       port: 465,
       secure: true,
       auth: {
-        user,
-        pass,
+        user: "useless.fake.acnt@gmail.com",
+        pass: "vdhd cstj sslu gpjq",
       },
     });
     const mailOptions = {
