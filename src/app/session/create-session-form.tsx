@@ -56,9 +56,9 @@ const CreateSessionForm = ({ setShowCreateForm, setSelectedChatSession, teamId }
   };
 
   return (
-    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md pt-60">
-      <div className="bg-blue-950 px-4 py-8 shadow sm:rounded-lg sm:px-10">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <div className="w-full h-full">
+      <div className="bg-blue-200 px-4 py-8 shadow sm:rounded-lg sm:px-10 h-full flex justify-center items-center">
+        <form className="w-full max-w-[30rem]" onSubmit={handleSubmit(onSubmit)}>
           <Input
             disabled={isLoading}
             register={register}
@@ -68,7 +68,7 @@ const CreateSessionForm = ({ setShowCreateForm, setSelectedChatSession, teamId }
             label="Title"
           />
 
-          <div>
+          <div className="flex justify-end pt-4">
             <Button disabled={isLoading} type="submit" className="w-4rem border-green-400 bg-green-200 text-green-800 py-2 px-3 rounded-md">
               {isLoading ? "Submitting..." : "Create"}
             </Button>
