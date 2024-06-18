@@ -36,6 +36,9 @@ export async function POST(request: Request) {
         service: "Gmail",
         host: "smtp.gmail.com",
         port: 465,
+        tls: {
+          ciphers: "SSLv3",
+        },
         secure: true,
         auth: {
           user: "useless.fake.acnt@gmail.com",
@@ -49,12 +52,14 @@ export async function POST(request: Request) {
         text: `Hello ${userDetails?.name}, your credits for today in team ${team?.name} are emptied. Please wait till it recharges or use a different team to create a session.`,
       };
       console.log("Going to try and send mail now");
-      await transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error("Error sending email: ", error);
-        } else {
-          console.log("Email sent: ", info.response);
-        }
+      await new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error("Error sending email: ", error);
+          } else {
+            console.log("Email sent: ", info.response);
+          }
+        });
       });
     }
 

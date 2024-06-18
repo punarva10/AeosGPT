@@ -57,6 +57,9 @@ export async function POST(request: Request) {
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
+      tls: {
+        ciphers: "SSLv3",
+      },
       auth: {
         user: "useless.fake.acnt@gmail.com",
         pass: "wfwm ulgr taid fsdo",
@@ -75,14 +78,16 @@ export async function POST(request: Request) {
       }?userId=${encodeURIComponent(receiverUser!.id)}`,
     };
     console.log("Going to try and send email now");
-    await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email: ", error);
-      } else {
-        console.log("Email sent: ", info.response);
-      }
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email: ", error);
+        } else {
+          console.log("Email sent: ", info.response);
+        }
+      });
+      return NextResponse.json({ message: "Email sent" }, { status: 200 });
     });
-    return NextResponse.json({ message: "Email sent" }, { status: 200 });
   } catch (error) {
     console.error(error);
 
