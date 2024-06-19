@@ -2,6 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import db from "./db";
+import crypto from "crypto";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -35,7 +36,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("User is not verified");
         }
 
-        const passwordMatch = credentials.password === existingUser.password;
+        const hash = crypto.createHash("sha256");
+        hash.update(credentials.password);
+        const hashedPassword = hash.digest("hex");
+
+        const passwordMatch = existingUser.password === hashedPassword;
         if (!passwordMatch) {
           return null;
         }

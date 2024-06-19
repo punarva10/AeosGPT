@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import db from "../../../lib/db";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
@@ -19,12 +20,15 @@ export async function POST(request: Request) {
     }
 
     const token = `${randomUUID()}${randomUUID()}`.replace(/-/g, "");
+    const hash = crypto.createHash("sha256");
+    hash.update(password);
+    const hashedPassword = hash.digest("hex");
 
     const newUser = await db.users.create({
       data: {
         name,
         email,
-        password,
+        password: hashedPassword,
         token,
       },
     });
