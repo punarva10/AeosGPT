@@ -47,6 +47,7 @@ const AuthForm = () => {
     setIsLoading(true);
 
     if (variant === "REGISTER") {
+      toast.success("Please verify your email by clicking on the link in your email")
       axios
         .post("/api/create-user", data)
         .then((res) => toggleVariant())

@@ -224,6 +224,7 @@ const ChatSessionFunction = () => {
       email: email,
       teamId: selectedTeam?.id,
     };
+    toast.success("Invitation sent successfully")
     axios
       .post("/api/send-invitation", data)
       .then(() => console.log("Mail sent successfully"))
