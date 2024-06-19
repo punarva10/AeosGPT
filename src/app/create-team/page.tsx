@@ -44,6 +44,13 @@ const CreateTeamPage = () => {
 
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-md h-[80%] flex flex-col justify-center">
+      <div className="absolute top-20 right-10 p-4">
+        <Button
+          onClick={() => router.push('/session')}
+        >
+          Go to Chat Directly
+        </Button>
+      </div>
       <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <Input
